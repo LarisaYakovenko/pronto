@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/pronto/static/css/main.f855e6bc.css",
+    "main.js": "/pronto/static/js/main.57a49099.js",
+    "static/js/453.19c77436.chunk.js": "/pronto/static/js/453.19c77436.chunk.js",
+    "static/media/logo.svg": "/pronto/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/pronto/index.html",
+    "main.f855e6bc.css.map": "/pronto/static/css/main.f855e6bc.css.map",
+    "main.57a49099.js.map": "/pronto/static/js/main.57a49099.js.map",
+    "453.19c77436.chunk.js.map": "/pronto/static/js/453.19c77436.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.57a49099.js"
+  ]
+}
