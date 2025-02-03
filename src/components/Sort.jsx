@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 
-const Sort = () => {
+const Sort = ({ value, onClickSort }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [selected, setSelected] = useState(0);
-  const list = ['популярністю', 'ціною', 'абеткою'];
-  const sortTitle = list[selected];
+
+  const list = [
+    { name: 'популярністю ↑', sort: 'rating' },
+    { name: 'популярністю ↓', sort: '-rating' },
+    { name: 'ціною ↑', sort: 'price' },
+    { name: 'ціною ↓', sort: '-price' },
+    { name: 'абеткою ↑', sort: 'title' },
+    { name: 'абеткою ↓', sort: '-title' },
+  ];
 
   const openList = i => {
-    setSelected(i);
+    onClickSort(i);
     setIsVisible(false);
   };
 
@@ -27,18 +33,18 @@ const Sort = () => {
           />
         </svg>
         <b>Сортувати за:</b>
-        <span onClick={() => setIsVisible(!isVisible)}> {sortTitle}</span>
+        <span onClick={() => setIsVisible(!isVisible)}> {value.name}</span>
       </div>
       {isVisible && (
         <div className="sort__popup">
           <ul>
-            {list.map((name, i) => (
+            {list.map((obj, i) => (
               <li
                 key={i}
-                onClick={() => openList(i)}
-                className={selected === i ? 'active' : ''}
+                onClick={() => openList(obj)}
+                className={value.sort === obj.sort ? 'active' : ''}
               >
-                {name}
+                {obj.name}
               </li>
             ))}
           </ul>

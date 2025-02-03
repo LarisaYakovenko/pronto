@@ -1,18 +1,25 @@
 import React from 'react';
 import logoPronto from '../assets/img/logoPronto.png';
+import { Link } from 'react-router-dom';
+import Search from './Search/Search';
 
-const Header = () => {
+const Header = ({ searchValue, setSearchValue }) => {
   return (
     <div className="header">
       <div className="container">
-        <div className="header__logo">
-          <img width="200" src={logoPronto} alt="Pizza logo" />
-        </div>
-        <div>
-          <h1> Pizza</h1>
-        </div>
+        <Link to="/">
+          <div className="header__logo">
+            <img width="200" src={logoPronto} alt="Pizza logo" />
+          </div>
+          <div>
+            <h1> Pizza</h1>
+          </div>
+        </Link>
+
+        <Search searchValue={searchValue} setSearchValue={setSearchValue} />
+
         <div className="header__cart">
-          <a href="/cart.html" className="button button--cart">
+          <Link to="/cart" className="button button--cart">
             <span>230 </span>
             <div className="button__delimiter"></div>
             <svg
@@ -45,7 +52,7 @@ const Header = () => {
               />
             </svg>
             <span>0</span>
-          </a>
+          </Link>
         </div>
       </div>
     </div>
