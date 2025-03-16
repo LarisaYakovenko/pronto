@@ -1,24 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSort } from '../redux/slices/filterSlice';
 
-const Sort = ({ value, onClickSort }) => {
+export const list = [
+  { name: 'популярністю ↑', sortProperty: 'rating' },
+  { name: 'популярністю ↓', sortProperty: '-rating' },
+  { name: 'ціною ↑', sortProperty: 'price' },
+  { name: 'ціною ↓', sortProperty: '-price' },
+  { name: 'абеткою ↑', sortProperty: 'title' },
+  { name: 'абеткою ↓', sortProperty: '-title' },
+];
+
+const Sort = () => {
+  const dispatch = useDispatch();
+  const sort = useSelector(state => state.filter.sort);
+  const sortRef = useRef();
+
   const [isVisible, setIsVisible] = useState(false);
 
-  const list = [
-    { name: 'популярністю ↑', sort: 'rating' },
-    { name: 'популярністю ↓', sort: '-rating' },
-    { name: 'ціною ↑', sort: 'price' },
-    { name: 'ціною ↓', sort: '-price' },
-    { name: 'абеткою ↑', sort: 'title' },
-    { name: 'абеткою ↓', sort: '-title' },
-  ];
+  const openList = obj => {
+    dispatch(setSort(obj));
 
-  const openList = i => {
-    onClickSort(i);
     setIsVisible(false);
   };
 
+  // useEffect(() => {
+  //   document.body.addEventListener('click', e => {
+  //     // console.log(event.composedPath());
+  //     console.log(e.composed);
+  //     console.log(e.composedPath());
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    const handleClickOutside = e => {
+      if (!e.composedPath().includes(sortRef.current)) {
+        setIsVisible(false);
+      }
+    };
+
+    document.body.addEventListener('click', handleClickOutside);
+
+    return () => document.body.removeEventListener('click', handleClickOutside);
+  }, []);
   return (
-    <div className="sort">
+    <div ref={sortRef} className="sort">
       <div className="sort__label">
         <svg
           width="10"
@@ -33,7 +59,7 @@ const Sort = ({ value, onClickSort }) => {
           />
         </svg>
         <b>Сортувати за:</b>
-        <span onClick={() => setIsVisible(!isVisible)}> {value.name}</span>
+        <span onClick={() => setIsVisible(!isVisible)}> {sort.name}</span>
       </div>
       {isVisible && (
         <div className="sort__popup">
@@ -42,7 +68,9 @@ const Sort = ({ value, onClickSort }) => {
               <li
                 key={i}
                 onClick={() => openList(obj)}
-                className={value.sort === obj.sort ? 'active' : ''}
+                className={
+                  sort.sortProperty === obj.sortProperty ? 'active' : ''
+                }
               >
                 {obj.name}
               </li>

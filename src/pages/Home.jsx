@@ -1,42 +1,109 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useContext, useEffect, useRef } from 'react';
+
+import qs from 'qs';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import Categories from '../components/Categories';
 
-import Sort from '../components/Sort';
+import Sort, { list } from '../components/Sort';
 
 import PizzaBlock from '../components/PizzaBlock/PizzaBlock';
 import { Placeholder } from '../components/PizzaBlock/Placeholder';
 import Pagination from '../components/Pagination/Pagination';
+import { AppContext } from '../App';
+import {
+  setCategoryId,
+  setCurrentPage,
+  setFilters,
+} from '../redux/slices/filterSlice';
+import { fetchPizzas } from '../redux/slices/pizzasSlice';
 
-const Home = ({ searchValue }) => {
-  const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [categoryId, setCategoryId] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sort, setSort] = useState({
-    name: 'популярністю',
-    sort: 'rating',
-  });
+const Home = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isSearch = useRef(false);
+  const isMounted = useRef(false);
+  const { categoryId, sort, currentPage } = useSelector(state => state.filter);
+  // const currentPage = useSelector(state => state.filter.categoryId);
+
+  // const sortType = useSelector(state => state.filter.sort.sortProperty);
+  const { items, status } = useSelector(state => state.pizza);
+
+  const { searchValue } = useContext(AppContext);
+  // const [items, setItems] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [categoryId, setCategoryId] = useState(0);
+  // const [currentPage, setCurrentPage] = useState(1);
+
+  // const [sortType, setSortType] = useState({
+  //   name: 'популярністю',
+  //   sortProperty: 'rating',
+  // });
+
+  const onClickCategory = id => {
+    dispatch(setCategoryId(id));
+  };
+  const onChangePage = page => {
+    dispatch(setCurrentPage(page));
+  };
 
   useEffect(() => {
-    setIsLoading(true);
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
 
-    const sortBy = sort.sort.replace('-', '');
-    const order = sort.sort.includes('-') ? 'asc' : 'desc';
+      const sort = list.find(obj => obj.sortProperty === params.sortProperty);
+
+      dispatch(
+        setFilters({
+          ...params,
+          sort,
+        })
+      );
+      isSearch.current = true;
+    }
+  }, []);
+
+  const getPizzas = async () => {
+    // setIsLoading(true);
+
+    const sortBy = sort.sortProperty.replace('-', '');
+    const order = sort.sortProperty.includes('-') ? 'asc' : 'desc';
     const category = categoryId > 0 ? `category=${categoryId}` : '';
     const search = searchValue ? `search=${searchValue}` : '';
 
-    fetch(
-      `https://657e1dcb3e3f5b18946387a8.mockapi.io/advert?page=${currentPage}&limit=4${category}${search}&sortBy=${sortBy}&order=${order}`
-    )
-      .then(res => {
-        return res.json();
+    dispatch(
+      fetchPizzas({
+        sortBy,
+        order,
+        category,
+        search,
+        currentPage,
       })
-      .then(arr => {
-        setItems(arr);
-        setIsLoading(false);
+    );
+
+    window.scrollTo(0, 0);
+  };
+
+  useEffect(() => {
+    // if (!isSearch.current) {
+    getPizzas();
+    // }
+    isSearch.current = false;
+  }, [categoryId, sort.sortProperty, searchValue, currentPage]);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortProperty: sort.sortProperty,
+        categoryId,
+        currentPage,
       });
-  }, [categoryId, sort, searchValue, currentPage]);
+      navigate(`?${queryString}`);
+    }
+    isMounted.current = true;
+  }, [categoryId, sort.sortProperty, currentPage]);
 
   const pizzaList = items.map(obj => <PizzaBlock key={obj.id} {...obj} />);
 
@@ -47,20 +114,25 @@ const Home = ({ searchValue }) => {
   return (
     <div className="container">
       <div className="content__top">
-        <Categories
-          value={categoryId}
-          onClickCategory={i => setCategoryId(i)}
-        />
-        <Sort value={sort} onClickSort={i => setSort(i)} />
+        <Categories value={categoryId} onClickCategory={onClickCategory} />
+        <Sort />
       </div>
 
       <h2 className="content__title">Всі піци</h2>
-      <div className="content__items">{isLoading ? sceletons : pizzaList}</div>
-      <Pagination onChengePage={number => setCurrentPage(number)} />
+      {status === 'error' ? (
+        <div className="content__error">
+          <h2>Виникла помилка 😕</h2>
+          <p>Скоріш завсе , Ви не зробили замовлення.</p>
+        </div>
+      ) : (
+        <div className="content__items">
+          {status === 'loading' ? sceletons : pizzaList}
+        </div>
+      )}
+
+      <Pagination currentPage={currentPage} onChangePage={onChangePage} />
     </div>
   );
 };
 
 export default Home;
-
-// ↓↑

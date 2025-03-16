@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { createContext, useState } from 'react';
 
 import Header from './components/Header';
 import Home from './pages/Home';
@@ -7,6 +7,8 @@ import { Route, Routes } from 'react-router-dom';
 import Cart from './pages/Cart';
 import NotFount from './pages/NotFount';
 
+export const AppContext = createContext();
+
 // import pizzas from './assets/pizzas.json';
 
 function App() {
@@ -14,14 +16,16 @@ function App() {
 
   return (
     <div className="wrapper">
-      <Header searchValue={searchValue} setSearchValue={setSearchValue} />
-      <div className="content">
-        <Routes>
-          <Route path="/" element={<Home searchValue={searchValue} />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="*" element={<NotFount />} />
-        </Routes>
-      </div>
+      <AppContext.Provider value={{ searchValue, setSearchValue }}>
+        <Header />
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="*" element={<NotFount />} />
+          </Routes>
+        </div>
+      </AppContext.Provider>
     </div>
   );
 }

@@ -26,6 +26,18 @@ body {
 .content {
   padding: 40px 0;
 
+  &__error {
+    margin: 80px auto;
+    width: 500px;
+    text-align: center;
+    h2 {
+      font-size: 28px;
+    }
+    p {
+      font-size: 24px;
+    }
+  }
+
   &__title {
     font-weight: 800;
     font-size: 38px;
@@ -147,6 +159,10 @@ body {
         color: darken($color: #b6b6b6, $amount: 50);
       }
     }
+  }
+
+  .content__items {
+    display: block;
   }
 
   &__item {
@@ -302,7 +318,7 @@ body {
           margin-right: 12px;
           path {
             fill: transparent;
-            stroke-width: 2;
+            // strokewidth: 2;
           }
         }
       }
