@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import qs from 'qs';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,26 +12,28 @@ import Sort, { list } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock/PizzaBlock';
 import { Placeholder } from '../components/PizzaBlock/Placeholder';
 import Pagination from '../components/Pagination/Pagination';
-import { AppContext } from '../App';
+// import { AppContext } from '../App';
 import {
+  selectFilter,
   setCategoryId,
   setCurrentPage,
   setFilters,
 } from '../redux/slices/filterSlice';
-import { fetchPizzas } from '../redux/slices/pizzasSlice';
+import { fetchPizzas, selectPizza } from '../redux/slices/pizzasSlice';
 
-const Home = () => {
+const Home: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSearch = useRef(false);
   const isMounted = useRef(false);
-  const { categoryId, sort, currentPage } = useSelector(state => state.filter);
+  const { categoryId, sort, currentPage, searchValue } =
+    useSelector(selectFilter);
   // const currentPage = useSelector(state => state.filter.categoryId);
 
   // const sortType = useSelector(state => state.filter.sort.sortProperty);
-  const { items, status } = useSelector(state => state.pizza);
+  const { items, status } = useSelector(selectPizza);
 
-  const { searchValue } = useContext(AppContext);
+  // const { searchValue } = useContext(AppContext);
   // const [items, setItems] = useState([]);
   // const [isLoading, setIsLoading] = useState(true);
   // const [categoryId, setCategoryId] = useState(0);
@@ -42,10 +44,10 @@ const Home = () => {
   //   sortProperty: 'rating',
   // });
 
-  const onClickCategory = id => {
-    dispatch(setCategoryId(id));
+  const onClickCategory = (idx: number) => {
+    dispatch(setCategoryId(idx));
   };
-  const onChangePage = page => {
+  const onChangePage = (page: number) => {
     dispatch(setCurrentPage(page));
   };
 
@@ -74,6 +76,7 @@ const Home = () => {
     const search = searchValue ? `search=${searchValue}` : '';
 
     dispatch(
+      //@ts-ignore
       fetchPizzas({
         sortBy,
         order,
@@ -105,7 +108,11 @@ const Home = () => {
     isMounted.current = true;
   }, [categoryId, sort.sortProperty, currentPage]);
 
-  const pizzaList = items.map(obj => <PizzaBlock key={obj.id} {...obj} />);
+  const pizzaList = items.map((obj: any) => (
+    // <Link key={obj.id} to={`/pizza/${obj.id}`}>
+    <PizzaBlock key={obj.id} {...obj} />
+    // </Link>
+  ));
 
   const sceletons = [...new Array(8)].map((_, index) => (
     <Placeholder key={index} />

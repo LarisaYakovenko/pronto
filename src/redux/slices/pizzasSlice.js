@@ -5,9 +5,9 @@ import axios from 'axios';
 export const fetchPizzas = createAsyncThunk(
   'pizza/fetchPizzasId',
   async params => {
-    const { sortBy, order, category, search, currentPage } = params;
+    const { sortBy, order, categoryId, search, currentPage } = params;
     const { data } = await axios.get(
-      `https://657e1dcb3e3f5b18946387a8.mockapi.io/advert?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
+      `https://657e1dcb3e3f5b18946387a8.mockapi.io/advert?page=${currentPage}&limit=4&${categoryId}&sortBy=${sortBy}&order=${order}&${search}`
     );
     return data;
   }
@@ -37,13 +37,14 @@ export const pizzasSlice = createSlice({
         state.items = action.payload;
         state.status = 'success';
       })
-      .addCase(fetchPizzas.rejected, (state, action) => {
+      .addCase(fetchPizzas.rejected, state => {
         state.status = 'error';
         state.items = [];
       });
   },
 });
 
+export const selectPizza = state => state.pizza;
 export const { setItems } = pizzasSlice.actions;
 
 export default pizzasSlice.reducer;

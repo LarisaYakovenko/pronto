@@ -1,7 +1,7 @@
 import React from 'react';
 import NotFountBlock from '../components/NotFountBlock/NotFountBlock';
 
-const NotFount = () => {
+const NotFount: React.FC = () => {
   return <NotFountBlock />;
 };
 

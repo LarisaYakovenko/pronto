@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProduct } from '../../redux/slices/cartSlice';
+import { addProduct, selectCartItem } from '../../redux/slices/cartSlice';
 
 const nameTypes = ['тонке', 'традиційне'];
 
-const PizzaBlock = ({ id, title, price, imageUrl, sizes, types }) => {
+type PizzaBlockProps = {
+  id: string;
+  title: string;
+  type: string;
+  size: number;
+  price: number;
+  count: number;
+  imageUrl: string;
+  sizes: number[];
+  types: number[];
+};
+
+const PizzaBlock: React.FC<PizzaBlockProps> = ({
+  id,
+  title,
+  price,
+  imageUrl,
+  sizes,
+  types,
+}) => {
   const dispatch = useDispatch();
-  const cartItem = useSelector(state =>
-    state.cart.items.find(obj => obj.id === id)
-  );
+  const cartItem = useSelector(selectCartItem(id));
   // const [count, setCount] = useState(0);
   const [activeTypes, setActiveTypes] = useState(0);
   const [activeSize, setActiveSize] = useState(0);
@@ -60,7 +77,7 @@ const PizzaBlock = ({ id, title, price, imageUrl, sizes, types }) => {
           </ul>
         </div>
         <div className="pizza-block__bottom">
-          <div className="pizza-block__price">від {price}</div>
+          <div className="pizza-block__price">від {price} ₴</div>
           <button
             onClick={onClickAdd}
             className="button button--outline button--add"
